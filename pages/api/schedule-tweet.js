@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { TwitterApi } from 'twitter-api-v2';
 
-// File to store scheduled tweets
+// File to store scheduled tweets (note: this won't persist in Vercel)
 const SCHEDULED_TWEETS_FILE = path.join(process.cwd(), 'scheduled-tweets.json');
 
 // Function to read scheduled tweets from file
@@ -63,7 +63,8 @@ export default async function handler(req, res) {
       message,
       scheduledTime,
       status: 'scheduled',
-      communityId: process.env.X_COMMUNITY_ID
+      communityId: process.env.X_COMMUNITY_ID,
+      createdAt: new Date().toISOString()
     };
     
     // Read existing scheduled tweets
@@ -72,18 +73,17 @@ export default async function handler(req, res) {
     // Add new scheduled tweet
     scheduledTweets.push(scheduledTweet);
     
-    // Save to file
+    // Save to file (note: this won't persist in Vercel)
     const saved = writeScheduledTweets(scheduledTweets);
     
     if (!saved) {
-      return res.status(500).json({ error: 'Failed to save scheduled tweet' });
+      console.warn('Failed to save scheduled tweet to file - this is expected in Vercel');
     }
     
     return res.status(200).json({ 
       success: true, 
       message: 'Tweet scheduled successfully',
-      id: scheduledTweet.id,
-      scheduledTime: scheduledTweet.scheduledTime 
+      tweet: scheduledTweet // Return the full tweet object so client can store it
     });
     
   } catch (error) {

@@ -23,13 +23,43 @@ export default function Home() {
   
   // Fetch scheduled tweets
   const fetchScheduledTweets = async () => {
+    // Skip if not in browser
+    if (typeof window === 'undefined') return;
+    
     setIsLoading(true);
     try {
+      // Try to get tweets from localStorage first
+      const localTweets = localStorage.getItem('scheduledTweets');
+      if (localTweets) {
+        setScheduledTweets(JSON.parse(localTweets) || []);
+      }
+      
+      // Then fetch from API to keep in sync with server
       const response = await fetch('/api/get-scheduled-tweets');
       const data = await response.json();
-      setScheduledTweets(data.tweets || []);
+      
+      // Merge local tweets with server tweets
+      if (data.tweets && data.tweets.length > 0) {
+        const mergedTweets = [...(JSON.parse(localTweets) || [])];
+        
+        // Add any tweets from the server that aren't in local storage
+        data.tweets.forEach(serverTweet => {
+          if (!mergedTweets.some(localTweet => localTweet.id === serverTweet.id)) {
+            mergedTweets.push(serverTweet);
+          }
+        });
+        
+        setScheduledTweets(mergedTweets);
+        localStorage.setItem('scheduledTweets', JSON.stringify(mergedTweets));
+      }
     } catch (error) {
       console.error('Error fetching scheduled tweets:', error);
+      
+      // Fallback to localStorage if API fails
+      const localTweets = localStorage.getItem('scheduledTweets');
+      if (localTweets) {
+        setScheduledTweets(JSON.parse(localTweets) || []);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -37,7 +67,10 @@ export default function Home() {
   
   // Fetch scheduled tweets on page load
   useEffect(() => {
-    fetchScheduledTweets();
+    // Initialize localStorage safely (only in browser)
+    if (typeof window !== 'undefined') {
+      fetchScheduledTweets();
+    }
   }, []);
 
   // Start the scheduler
@@ -95,6 +128,15 @@ export default function Home() {
         setScheduleStatus(`Success! Tweet scheduled for ${format(scheduledDate, 'PPpp')}`);
         setMessage('');
         setScheduledDate(new Date());
+        
+        // Store in localStorage
+        if (data.tweet) {
+          const localTweets = localStorage.getItem('scheduledTweets');
+          const tweets = localTweets ? JSON.parse(localTweets) : [];
+          tweets.push(data.tweet);
+          localStorage.setItem('scheduledTweets', JSON.stringify(tweets));
+        }
+        
         // Refresh the list of scheduled tweets
         fetchScheduledTweets();
       } else {
