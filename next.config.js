@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  trailingSlash: true,
   env: {
     X_API_KEY: process.env.X_API_KEY,
     X_API_SECRET: process.env.X_API_SECRET,
