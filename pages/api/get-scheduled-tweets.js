@@ -6,12 +6,17 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('API: Intentando leer tweets programados');
+    
+    // Leer del archivo JSON
     const tweets = readScheduledTweets();
+    console.log(`API: Tweets leídos del archivo: ${tweets.length}`, JSON.stringify(tweets));
     
     // Sort by scheduled time
     tweets.sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime));
     
     // Return the tweets
+    console.log(`API: Enviando ${tweets.length} tweets al cliente`);
     return res.status(200).json({ tweets });
   } catch (error) {
     console.error('Error getting scheduled tweets:', error);

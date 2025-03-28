@@ -1,9 +1,37 @@
 [
   {
-    "id": "tweet_1743172919970_nbakx4ibz",
-    "message": "asdfasd asdf asdf",
-    "scheduledTime": "2025-03-28T20:00:00.000Z",
-    "status": "scheduled",
-    "communityId": "your_community_id_here"
+    "id": "tweet_1743175534457_qnvrrf8qf",
+    "message": "asdfasdf",
+    "scheduledTime": "2025-03-28T15:45:00.000Z",
+    "status": "failed",
+    "communityId": "your_community_id_here",
+    "result": {
+      "error": "Request failed with code 401",
+      "details": {
+        "title": "Unauthorized",
+        "type": "about:blank",
+        "status": 401,
+        "detail": "Unauthorized"
+      },
+      "failedAt": "2025-03-28T15:45:00.482Z"
+    }
+  },
+  {
+    "id": "tweet_1743176081779_hkgk9aklw",
+    "message": "asdf",
+    "scheduledTime": "2025-03-28T15:45:00.000Z",
+    "status": "failed",
+    "communityId": "your_community_id_here",
+    "createdAt": "2025-03-28T15:34:41.779Z",
+    "result": {
+      "error": "Request failed with code 401",
+      "details": {
+        "title": "Unauthorized",
+        "type": "about:blank",
+        "status": 401,
+        "detail": "Unauthorized"
+      },
+      "failedAt": "2025-03-28T15:45:00.647Z"
+    }
   }
 ]

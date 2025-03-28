@@ -26,20 +26,28 @@ export default function Home() {
     // Skip if not in browser
     if (typeof window === 'undefined') return;
     
+    console.log('Cliente: Iniciando obtención de tweets programados');
     setIsLoading(true);
     try {
       // Try to get tweets from localStorage first
       const localTweets = localStorage.getItem('scheduledTweets');
       if (localTweets) {
-        setScheduledTweets(JSON.parse(localTweets) || []);
+        const parsedLocalTweets = JSON.parse(localTweets) || [];
+        console.log('Cliente: Tweets leídos de localStorage:', parsedLocalTweets.length);
+        setScheduledTweets(parsedLocalTweets);
+      } else {
+        console.log('Cliente: No hay tweets en localStorage');
       }
       
       // Then fetch from API to keep in sync with server
+      console.log('Cliente: Solicitando tweets del servidor...');
       const response = await fetch('/api/get-scheduled-tweets');
       const data = await response.json();
+      console.log('Cliente: Respuesta del servidor:', data);
       
       // Merge local tweets with server tweets
       if (data.tweets && data.tweets.length > 0) {
+        console.log('Cliente: El servidor devolvió', data.tweets.length, 'tweets');
         const mergedTweets = [...(JSON.parse(localTweets) || [])];
         
         // Add any tweets from the server that aren't in local storage
@@ -49,8 +57,11 @@ export default function Home() {
           }
         });
         
+        console.log('Cliente: Tweets combinados después de la fusión:', mergedTweets.length);
         setScheduledTweets(mergedTweets);
         localStorage.setItem('scheduledTweets', JSON.stringify(mergedTweets));
+      } else {
+        console.log('Cliente: El servidor no devolvió tweets');
       }
     } catch (error) {
       console.error('Error fetching scheduled tweets:', error);
@@ -58,7 +69,9 @@ export default function Home() {
       // Fallback to localStorage if API fails
       const localTweets = localStorage.getItem('scheduledTweets');
       if (localTweets) {
-        setScheduledTweets(JSON.parse(localTweets) || []);
+        const parsedLocalTweets = JSON.parse(localTweets) || [];
+        console.log('Cliente: Fallback a localStorage después de error:', parsedLocalTweets.length, 'tweets');
+        setScheduledTweets(parsedLocalTweets);
       }
     } finally {
       setIsLoading(false);
