@@ -1,56 +1,63 @@
-# Twitter Community Bot
+# Twitter Community Post Scheduler
 
-A Twitter bot that interacts with a specific community, reading posts and responding to them.
-
-## Setup
-
-1. Clone this repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file with your Twitter API credentials:
-   ```
-   TWITTER_API_KEY=your_api_key_here
-   TWITTER_API_SECRET=your_api_secret_here
-   TWITTER_ACCESS_TOKEN=your_access_token_here
-   TWITTER_ACCESS_SECRET=your_access_secret_here
-   COMMUNITY_ID=1493446837214187523
-   ```
-
-## Local Development
-
-To run the bot locally:
-```bash
-node src/bot.js
-```
-
-## Deployment to Vercel
-
-1. Install Vercel CLI:
-   ```bash
-   npm i -g vercel
-   ```
-
-2. Deploy to Vercel:
-   ```bash
-   vercel
-   ```
-
-3. Set up environment variables in your Vercel project settings
-
-4. Set up a cron job or use a service like cron-job.org to trigger the bot endpoint periodically:
-   ```
-   POST https://your-vercel-domain.vercel.app/api/bot
-   ```
+A Next.js application for scheduling posts to Twitter communities.
 
 ## Features
 
-- Read posts from a specific Twitter community
-- Post new tweets
-- Reply to community posts
-- Automated execution via API endpoint
+- Schedule tweets to be posted at a specific date and time
+- Character count checker to ensure tweets don't exceed 280 characters
+- View and manage scheduled tweets
+- Scheduler runs in the background to post tweets at their scheduled time
 
-## Note
+## Setup
 
-This bot uses Twitter API v2. Make sure you have the appropriate API access level and permissions for your Twitter Developer account. 
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create a `.env.local` file with your Twitter API credentials:
+
+```
+X_API_KEY=your_api_key_here
+X_API_SECRET=your_api_secret_here
+X_ACCESS_TOKEN=your_access_token_here
+X_ACCESS_SECRET=your_access_secret_here
+X_COMMUNITY_ID=your_community_id_here
+```
+
+**Important**: Make sure your Twitter API app has **write permissions** to post tweets.
+
+3. Run the development server:
+
+```bash
+npm run dev
+```
+
+## How It Works
+
+1. The app allows you to write a tweet and select a future date and time
+2. Scheduled tweets are stored in a JSON file (`scheduled-tweets.json`)
+3. When you start the scheduler, it checks for due tweets every minute
+4. When a tweet's scheduled time arrives, the scheduler posts it to Twitter
+
+## Rate Limits
+
+Note that Twitter's free tier API has strict rate limits:
+- 17 tweets per 24 hours
+- Various endpoints limited to 1 request per 15 minutes
+
+## Deployment
+
+To build the app for production:
+
+```bash
+npm run build
+```
+
+Then start the production server:
+
+```bash
+npm start
+``` 
